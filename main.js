@@ -32,22 +32,28 @@ function findOrCreateRoom() {
   return newRoom
 }
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   const room = findOrCreateRoom()
-  console.log('file: main.js:38  room', room)
+  await new Promise((r) => setTimeout(r, 1000))
   socket.emit('find room', room)
 
   socket.on('join room', (roomName) => {
     socket.join(roomName)
   })
 
+  console.log(rooms)
+
   socket.on('send message', ({ content, sender, to }) => {
-    console.log('file: main.js:45  to', to)
     if (messages[to]) {
       messages[to].push({ [sender]: content })
       const payload = { content, sender }
       io.to(to).emit('new message', payload)
     }
+  })
+
+  socket.on('disconnect', () => {
+    // console.log('socket disconnected')
+    // Code to remove socket from room
   })
 })
 

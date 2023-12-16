@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Chat</title>
+    <title>Chat with strangers</title>
     <style>
       * {
         margin: 0;
@@ -72,9 +72,22 @@
         color: blue;
         font-weight: 700;
       }
+
+      #guides {
+        font-size: 2rem;
+        position: absolute;
+        margin-top: 3rem;
+        padding-inline: 1rem;
+      }
     </style>
   </head>
   <body>
+    <section id="guides">
+      <!-- <p>Waiting for a match...</p>
+      <p>Connected</p> -->
+      <!-- <p>Stranger disconnected</p>
+      <p>Press &lt;Esc&gt; to start a new chat</p> -->
+    </section>
     <section id="messages"></section>
 
     <form id="form" action="">
@@ -90,11 +103,18 @@
       const form = document.getElementById('form')
       const input = document.getElementById('input')
       const messages = document.getElementById('messages')
+      const guides = document.getElementById('guides')
       let to
 
-      socket.on('find room', (roomName) => {
+      guides.innerHTML = '<p>Waiting for a match...</p>'
+
+      socket.on('find room', async (roomName) => {
         to = roomName
+        guides.innerHTML = '<p>Match found, say hi!</p>'
+        await new Promise((r) => setTimeout(r, 1000))
+        console.log('file: chat.html:97  roomName', roomName)
         socket.emit('join room', to)
+        guides.innerHTML = ''
       })
 
       form.addEventListener('submit', (e) => {
