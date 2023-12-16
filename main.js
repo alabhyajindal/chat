@@ -44,10 +44,10 @@ io.on('connection', (socket) => {
     }
   })
 
-  socket.on('send message', ({ content, sender, to }) => {
+  socket.on('send message', ({ content, socketId, to }) => {
     if (messages[to]) {
-      messages[to].push({ [sender]: content })
-      const payload = { content, sender }
+      messages[to].push({ [socketId]: content })
+      const payload = { content, socketId }
       io.to(to).emit('new message', payload)
     }
   })

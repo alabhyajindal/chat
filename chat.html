@@ -68,15 +68,20 @@
         font-size: 1.4rem;
       }
 
-      #messages > div > #sender {
-        color: blue;
+      #messages > div > #you {
         font-weight: 700;
+        color: blue;
+      }
+
+      #messages > div #stranger {
+        font-weight: 700;
+        color: red;
       }
 
       #messages > div > #notif {
+        font-weight: 600;
         margin-top: 3rem;
         font-size: 2rem;
-        font-weight: 600;
       }
     </style>
   </head>
@@ -91,7 +96,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io()
-      const sender = Math.random()
 
       const form = document.getElementById('form')
       const input = document.getElementById('input')
@@ -133,7 +137,7 @@
         if (input.value) {
           socket.emit('send message', {
             content: input.value,
-            sender,
+            socketId: socket.id,
             to,
           })
           input.value = ''
@@ -143,10 +147,11 @@
       socket.on('new message', (payload) => {
         console.log(payload)
         removeNotifs()
-
-        const { content, sender } = payload
+        const { content, socketId } = payload
+        console.log(socketId, socket.id)
+        const sender = socketId === socket.id ? 'you' : 'Stranger'
         const item = document.createElement('div')
-        item.innerHTML = `<p id="sender">${sender}</p><p id="content">${content}</p>`
+        item.innerHTML = `<p id="${sender.toLowerCase()}">${sender}</p><p id="content">${content}</p>`
         messages.appendChild(item)
         messages.scrollTop = messages.scrollHeight
       })
