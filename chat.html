@@ -75,11 +75,6 @@
     </style>
   </head>
   <body>
-    <section id="rooms">
-      <h1>football</h1>
-      <h1>music</h1>
-      <h1>running</h1>
-    </section>
     <section id="messages"></section>
 
     <form id="form" action="">
@@ -95,19 +90,12 @@
       const form = document.getElementById('form')
       const input = document.getElementById('input')
       const messages = document.getElementById('messages')
-
       let to
 
-      const rooms = document.querySelectorAll('#rooms > h1')
-      rooms.forEach((room) => {
-        room.addEventListener('click', (e) => {
-          to = room.innerText
-          messages.innerHTML = ''
-          socket.emit('join room', to)
-        })
+      socket.on('find room', (roomName) => {
+        to = roomName
+        socket.emit('join room', to)
       })
-
-      input.focus()
 
       form.addEventListener('submit', (e) => {
         e.preventDefault()
@@ -122,7 +110,6 @@
       })
 
       socket.on('new message', (payload) => {
-        console.log(payload)
         const { content, sender } = payload
         const item = document.createElement('div')
         item.innerHTML = `<p>${sender}</p><p>${content}</p>`
