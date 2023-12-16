@@ -68,12 +68,18 @@
         font-size: 1.4rem;
       }
 
-      #messages > div > p:first-child {
+      #messages > div > #sender {
         color: blue;
         font-weight: 700;
       }
 
+      #messages div > #disconnected {
+        font-size: 2rem;
+        font-weight: 600;
+      }
+
       #guides {
+        font-weight: 600;
         font-size: 2rem;
         position: absolute;
         margin-top: 3rem;
@@ -108,13 +114,16 @@
 
       guides.innerHTML = '<p>Waiting for a match...</p>'
 
-      socket.on('find room', async (roomName) => {
+      socket.on('find room', (roomName) => {
         to = roomName
-        guides.innerHTML = '<p>Match found, say hi!</p>'
-        await new Promise((r) => setTimeout(r, 1000))
         console.log('file: chat.html:97  roomName', roomName)
         socket.emit('join room', to)
-        guides.innerHTML = ''
+
+        socket.on('room full', async () => {
+          guides.innerHTML = '<p>Match found, say hi!</p>'
+          await new Promise((r) => setTimeout(r, 1000))
+          console.log('file: chat.html:122  roomName', roomName)
+        })
       })
 
       form.addEventListener('submit', (e) => {
@@ -130,11 +139,18 @@
       })
 
       socket.on('new message', (payload) => {
+        guides.innerHTML = ''
         const { content, sender } = payload
         const item = document.createElement('div')
-        item.innerHTML = `<p>${sender}</p><p>${content}</p>`
+        item.innerHTML = `<p id="sender">${sender}</p><p id="content">${content}</p>`
         messages.appendChild(item)
         messages.scrollTop = messages.scrollHeight
+      })
+
+      socket.on('stranger left', () => {
+        const item = document.createElement('div')
+        item.innerHTML = "<p id='disconnected'>Stranger disconnected</p>"
+        messages.appendChild(item)
       })
     </script>
   </body>

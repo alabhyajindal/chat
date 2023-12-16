@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 })
 
 function findOrCreateRoom() {
+  // console.log(socket.id)
   for (let room in rooms) {
     if (rooms[room] < 2) {
       rooms[room]++
@@ -32,16 +33,16 @@ function findOrCreateRoom() {
   return newRoom
 }
 
-io.on('connection', async (socket) => {
+io.on('connection', (socket) => {
   const room = findOrCreateRoom()
-  await new Promise((r) => setTimeout(r, 1000))
   socket.emit('find room', room)
 
   socket.on('join room', (roomName) => {
     socket.join(roomName)
+    if (rooms[roomName] === 2) {
+      io.to(roomName).emit('room full')
+    }
   })
-
-  console.log(rooms)
 
   socket.on('send message', ({ content, sender, to }) => {
     if (messages[to]) {
@@ -51,23 +52,18 @@ io.on('connection', async (socket) => {
     }
   })
 
-  socket.on('disconnect', () => {
-    // console.log('socket disconnected')
-    // Code to remove socket from room
+  socket.on('disconnecting', () => {
+    console.log('file: main.js:60  socket.rooms', socket.rooms)
+    for (let room of socket.rooms) {
+      if (rooms[room]) {
+        io.to(room).emit('stranger left')
+        delete rooms[room]
+        delete messages[room]
+      }
+    }
   })
 })
 
 server.listen(3000, () => {
   console.log('server running at http://localhost:3000')
 })
-
-/*
-A button on the page - click on it:
-  - server checks for existing queues of length 1
-    - if exists, then adds you to one of them
-    - else, creates a new queue
-You then wait in the queue until another person joins the queue
-And then the chat is started
-
-For the queue, using an array would work to test out the concept. And then redis could be used later
-*/
