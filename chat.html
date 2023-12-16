@@ -73,27 +73,14 @@
         font-weight: 700;
       }
 
-      #messages div > #disconnected {
-        font-size: 2rem;
-        font-weight: 600;
-      }
-
-      #guides {
-        font-weight: 600;
-        font-size: 2rem;
-        position: absolute;
+      #messages > div > #notif {
         margin-top: 3rem;
-        padding-inline: 1rem;
+        font-size: 2rem;
+        font-weight: 600;
       }
     </style>
   </head>
   <body>
-    <section id="guides">
-      <!-- <p>Waiting for a match...</p>
-      <p>Connected</p> -->
-      <!-- <p>Stranger disconnected</p>
-      <p>Press &lt;Esc&gt; to start a new chat</p> -->
-    </section>
     <section id="messages"></section>
 
     <form id="form" action="">
@@ -109,20 +96,35 @@
       const form = document.getElementById('form')
       const input = document.getElementById('input')
       const messages = document.getElementById('messages')
-      const guides = document.getElementById('guides')
       let to
 
-      guides.innerHTML = '<p>Waiting for a match...</p>'
+      function removeNotifs() {
+        const notif = document.getElementById('notif')
+        if (notif) {
+          notif.remove()
+        }
+      }
+
+      function showNotif(content, overwrite) {
+        removeNotifs()
+        if (overwrite) {
+          messages.innerHTML = `<div><p id='notif'>${content}</p></div>`
+        } else {
+          messages.insertAdjacentHTML(
+            'beforeend',
+            `<div><p id='notif'>${content}</p></div>`
+          )
+        }
+      }
+
+      showNotif('Waiting for a match...', true)
 
       socket.on('find room', (roomName) => {
         to = roomName
-        console.log('file: chat.html:97  roomName', roomName)
         socket.emit('join room', to)
 
-        socket.on('room full', async () => {
-          guides.innerHTML = '<p>Match found, say hi!</p>'
-          await new Promise((r) => setTimeout(r, 1000))
-          console.log('file: chat.html:122  roomName', roomName)
+        socket.on('room full', () => {
+          showNotif('Match found, say hi!', true)
         })
       })
 
@@ -139,7 +141,9 @@
       })
 
       socket.on('new message', (payload) => {
-        guides.innerHTML = ''
+        console.log(payload)
+        removeNotifs()
+
         const { content, sender } = payload
         const item = document.createElement('div')
         item.innerHTML = `<p id="sender">${sender}</p><p id="content">${content}</p>`
@@ -148,9 +152,7 @@
       })
 
       socket.on('stranger left', () => {
-        const item = document.createElement('div')
-        item.innerHTML = "<p id='disconnected'>Stranger disconnected</p>"
-        messages.appendChild(item)
+        showNotif('Stranger disconnected', false)
       })
     </script>
   </body>

@@ -52,8 +52,9 @@ io.on('connection', (socket) => {
     }
   })
 
+  console.log({ rooms })
+
   socket.on('disconnecting', () => {
-    console.log('file: main.js:60  socket.rooms', socket.rooms)
     for (let room of socket.rooms) {
       if (rooms[room]) {
         io.to(room).emit('stranger left')
