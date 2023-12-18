@@ -117,7 +117,15 @@
 
       const input = document.getElementById('input')
       const messages = document.getElementById('messages')
+      const escape = document.getElementById('esc-btn')
       let to
+
+      function startNewChat() {
+        const startNew = confirm('Start new chat?')
+        if (startNew) {
+          window.location.reload()
+        }
+      }
 
       function removeNotifs() {
         const notif = document.getElementById('notif')
@@ -149,6 +157,12 @@
         })
       })
 
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          startNewChat()
+        }
+      })
+
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && input.value) {
           socket.emit('send message', {
@@ -158,6 +172,10 @@
           })
           input.value = ''
         }
+      })
+
+      escape.addEventListener('click', (e) => {
+        startNewChat()
       })
 
       socket.on('new message', (payload) => {
