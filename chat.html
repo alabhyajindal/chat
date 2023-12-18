@@ -7,9 +7,9 @@
       :root {
         --color: #0d0f10;
         --input-background: #e9ecef;
-        --esc-background: #343a40;
-        --esc-background-hover: #212529;
-        --esc-color: #f8f9fa;
+        --btn-background: #343a40;
+        --btn-background-hover: #212529;
+        --btn-color: #f8f9fa;
         --you: blue;
         --stranger: red;
         --selection-color: #faa2c1;
@@ -28,7 +28,7 @@
 
       html {
         margin: 0 auto;
-        max-width: 600px;
+        max-width: 800px;
       }
 
       body {
@@ -42,7 +42,7 @@
 
       #form {
         display: flex;
-        height: 5rem;
+        height: 4rem;
         flex-shrink: 0;
         visibility: hidden;
       }
@@ -58,26 +58,27 @@
         outline: none;
       }
 
-      #esc-btn {
-        background-color: var(--esc-background);
+      button {
+        background-color: var(--btn-background);
         border: none;
-        padding: 0 2rem;
-        outline: none;
-        color: var(--esc-color);
+        padding: 0 3rem;
+        color: var(--btn-color);
         cursor: pointer;
       }
 
-      #esc-btn:hover {
-        background-color: var(--esc-background-hover);
+      button:hover {
+        background-color: var(--btn-background-hover);
       }
 
       #messages {
+        margin-top: 1rem;
         overflow: auto;
       }
 
       #messages > div {
-        padding: 1rem 2rem;
+        padding: 2rem;
         font-size: 1.4rem;
+        word-wrap: break-word;
       }
 
       #messages > div:last-child {
@@ -96,11 +97,10 @@
 
       #messages > #notif {
         font-weight: 600;
-        margin-top: 3rem;
         font-size: 2rem;
       }
 
-      @media (min-width: 600px) {
+      @media (min-width: 800px) {
         #form {
           margin-bottom: 1.2rem;
         }
@@ -119,12 +119,7 @@
     <section id="messages"></section>
 
     <section id="form">
-      <input
-        type="button"
-        value="Esc"
-        id="esc-btn"
-        title="Press <Esc> to start a new chat"
-      />
+      <button id="esc-btn" title="Press <Esc> to start a new chat">Esc</button>
       <input id="input" autocomplete="off" enterkeyhint="send" />
     </section>
 
@@ -160,7 +155,7 @@
           messages.insertAdjacentHTML(
             'beforeend',
             `<div id='notif'><p>${content}</p>
-              <input type="button" value="New chat?" onclick="startNewChat()" style="background: #343a40;color: #f8f9fa;padding: 1rem;margin-top: 2rem;border-radius: 2px;/*! outline: none; */border: none;cursor: pointer;font-size: 1.4rem;">
+              <button onclick="startNewChat()" style="padding: 1rem 2rem;margin-top: 2rem;border-radius: 2px;font-size: 1.4rem;">New chat?</button>
               </div>`
           )
         }
@@ -213,7 +208,7 @@
 
       socket.on('stranger left', () => {
         form.style.visibility = 'hidden'
-        showNotif('Stranger disconnected', false)
+        showNotif('Stranger disconnected.', false)
       })
     </script>
   </body>
