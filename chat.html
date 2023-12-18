@@ -4,6 +4,17 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Chat with strangers</title>
     <style>
+      :root {
+        --color: #0d0f10;
+        --input-background: #e9ecef;
+        --esc-background: #343a40;
+        --esc-background-hover: #212529;
+        --esc-color: #f8f9fa;
+        --you: blue;
+        --stranger: red;
+        --selection-color: magenta;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -12,7 +23,7 @@
       }
 
       *::selection {
-        background-color: magenta;
+        background-color: var(--selection-color);
       }
 
       html {
@@ -26,19 +37,21 @@
         justify-content: space-between;
         height: 100dvh;
         overflow: hidden;
+        color: var(--color);
       }
 
       #form {
         display: flex;
         height: 5rem;
         flex-shrink: 0;
+        visibility: hidden;
       }
 
       #input {
         border: none;
         padding: 0 1rem;
         flex-grow: 1;
-        background-color: #ebebeb;
+        background-color: var(--input-background);
       }
 
       #input:focus {
@@ -46,13 +59,16 @@
       }
 
       #esc-btn {
-        background: #333;
+        background-color: var(--esc-background);
         border: none;
         padding: 0 2rem;
         outline: none;
-        color: #fff;
+        color: var(--esc-color);
         cursor: pointer;
-        z-index: 200;
+      }
+
+      #esc-btn:hover {
+        background-color: var(--esc-background-hover);
       }
 
       #messages {
@@ -70,12 +86,12 @@
 
       #messages > div > #you {
         font-weight: 700;
-        color: blue;
+        color: var(--you);
       }
 
       #messages > div #stranger {
         font-weight: 700;
-        color: red;
+        color: var(--stranger);
       }
 
       #messages > #notif {
@@ -85,10 +101,6 @@
       }
 
       @media (min-width: 600px) {
-        body {
-          /* background-color: gray; */
-        }
-
         #form {
           margin-bottom: 1.2rem;
         }
@@ -115,6 +127,7 @@
     <script>
       const socket = io()
 
+      const form = document.getElementById('form')
       const input = document.getElementById('input')
       const messages = document.getElementById('messages')
       const escape = document.getElementById('esc-btn')
@@ -154,6 +167,8 @@
 
         socket.on('room full', () => {
           showNotif('Match found, say hi!', true)
+          form.style.visibility = 'visible'
+          input.focus()
         })
       })
 
