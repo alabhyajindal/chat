@@ -13,14 +13,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const rooms = {}
 
-const messages = {}
-
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'chat.html'))
 })
 
 function findOrCreateRoom() {
-  // console.log(socket.id)
   for (let room in rooms) {
     if (rooms[room] < 2) {
       rooms[room]++
@@ -29,7 +26,6 @@ function findOrCreateRoom() {
   }
   const newRoom = nanoid()
   rooms[newRoom] = 1
-  messages[newRoom] = []
   return newRoom
 }
 
@@ -45,8 +41,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('send message', ({ content, socketId, to }) => {
-    if (messages[to]) {
-      messages[to].push({ [socketId]: content })
+    if (rooms[to] === 2) {
       const payload = { content, socketId }
       io.to(to).emit('new message', payload)
     }
@@ -59,7 +54,6 @@ io.on('connection', (socket) => {
       if (rooms[room]) {
         io.to(room).emit('stranger left')
         delete rooms[room]
-        delete messages[room]
       }
     }
   })
