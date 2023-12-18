@@ -12,7 +12,7 @@
         --esc-color: #f8f9fa;
         --you: blue;
         --stranger: red;
-        --selection-color: magenta;
+        --selection-color: #faa2c1;
       }
 
       * {
@@ -119,7 +119,12 @@
     <section id="messages"></section>
 
     <section id="form">
-      <input type="button" value="Esc" id="esc-btn" />
+      <input
+        type="button"
+        value="Esc"
+        id="esc-btn"
+        title="Press <Esc> to start a new chat"
+      />
       <input id="input" autocomplete="off" enterkeyhint="send" />
     </section>
 
@@ -154,7 +159,9 @@
         } else {
           messages.insertAdjacentHTML(
             'beforeend',
-            `<div id='notif'><p>${content}</p></div>`
+            `<div id='notif'><p>${content}</p>
+              <input type="button" value="New chat?" onclick="startNewChat()" style="background: #343a40;color: #f8f9fa;padding: 1rem;margin-top: 2rem;border-radius: 2px;/*! outline: none; */border: none;cursor: pointer;font-size: 1.4rem;">
+              </div>`
           )
         }
       }
@@ -205,6 +212,7 @@
       })
 
       socket.on('stranger left', () => {
+        form.style.visibility = 'hidden'
         showNotif('Stranger disconnected', false)
       })
     </script>
